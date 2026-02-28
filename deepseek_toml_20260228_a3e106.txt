@@ -1,0 +1,92 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "torch>=2.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cup-tracker-pro"
+version = "1.0.0"
+description = "Professional self-learning cup tracking system"
+readme = "README.md"
+authors = [
+    {name = "Your Name", email = "email@example.com"}
+]
+license = {text = "GPL-3.0"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Games/Entertainment",
+    "Environment :: X11 Applications",
+    "Environment :: Wayland"
+]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.24.0",
+    "opencv-python>=4.8.0",
+    "torch>=2.0.0",
+    "torchvision>=0.15.0",
+    "PySide6>=6.5.0",
+    "mss>=9.0.0",
+    "pillow>=10.0.0",
+    "scikit-learn>=1.3.0",
+    "joblib>=1.3.0",
+    "pywayland>=0.4.0",
+    "systemd-python>=235",
+    "psutil>=5.9.0"
+]
+
+[project.optional-dependencies]
+cuda = ["cuda-python>=12.0", "pycuda>=2022.2"]
+rocm = ["rocm-python>=5.0"]
+dev = ["pytest>=7.0", "black>=23.0", "mypy>=1.0", "pylint>=2.17"]
+
+[project.scripts]
+cup-tracker = "cup_tracker.main:main"
+
+[project.entry-points.gui_scripts]
+cup-tracker-gui = "cup_tracker.ui.gtk_control:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["cup_tracker*"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+"cup_tracker" = ["py.typed"]
+"cup_tracker.ui" = ["*.glade", "*.css"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = false
+
+[tool.black]
+line-length = 100
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-ra -q --strict-markers"
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_classes = "Test*"
+python_functions = "test_*"
