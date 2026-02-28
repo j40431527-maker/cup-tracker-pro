@@ -1,0 +1,70 @@
+# Maintainer: Your Name <email@example.com>
+pkgname=cup-tracker-pro
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Professional self-learning cup tracking system for Guess the Cup game"
+arch=('x86_64')
+url="https://github.com/yourrepo/cup-tracker-pro"
+license=('GPL3')
+depends=(
+    'python'
+    'python-numpy'
+    'python-opencv'
+    'python-torch'
+    'python-torchvision'
+    'python-pyside6'
+    'python-mss'
+    'python-pywayland'
+    'python-systemd'
+    'vulkan-intel'
+    'vulkan-radeon'
+    'vulkan-nouveau'
+    'python-cuda'
+    'opencl-amd'
+    'opencl-nvidia'
+    'python-pycuda'
+)
+makedepends=(
+    'python-build'
+    'python-installer'
+    'python-wheel'
+    'cmake'
+    'ninja'
+)
+optdepends=(
+    'cuda: NVIDIA GPU acceleration'
+    'rocm-opencl-runtime: AMD GPU acceleration'
+    'intel-compute-runtime: Intel GPU acceleration'
+)
+conflicts=()
+provides=('cup-tracker')
+install=cup-tracker-pro.install
+source=("$pkgname-$pkgver.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "$srcdir/$pkgname-$pkgver"
+    python -m build --wheel --no-isolation
+}
+
+package() {
+    cd "$srcdir/$pkgname-$pkgver"
+    
+    # Install Python package
+    python -m installer --destdir="$pkgdir" dist/*.whl
+    
+    # Install system files
+    install -Dm644 config/cup_tracker.conf "$pkgdir/etc/cup-tracker/config.conf"
+    install -Dm755 scripts/cup-tracker "$pkgdir/usr/bin/cup-tracker"
+    
+    # Install desktop entry
+    install -Dm644 data/cup-tracker.desktop "$pkgdir/usr/share/applications/cup-tracker.desktop"
+    install -Dm644 data/icon.png "$pkgdir/usr/share/icons/hicolor/256x256/apps/cup-tracker.png"
+    
+    # Install systemd service
+    install -Dm644 scripts/cup-tracker.service "$pkgdir/usr/lib/systemd/user/cup-tracker.service"
+    
+    # Create model directory
+    install -dm755 "$pkgdir/usr/share/cup-tracker/models"
+    cp -r models/pretrained/* "$pkgdir/usr/share/cup-tracker/models/"
+}
